@@ -8,10 +8,12 @@ fn main() {
   // tx: 転送
   // rx: 受信
   let (tx, rx) = mpsc::channel();
+  let tx1 = mpsc::Sender::clone(&tx);
 
-  println!("spawn begin");
+  println!("spawn begin 1");
 
   thread::spawn(move || {
+    println!("spawned thread begin 1");
     let vals = vec![
       String::from("hi"),
       String::from("from"),
@@ -20,7 +22,25 @@ fn main() {
     ];
 
     for val in vals {
-      println!("send begin");
+      println!("send begin 1");
+      tx1.send(val).unwrap();
+      thread::sleep(Duration::from_secs(1));
+    }
+  });
+
+  println!("spawn begin 2");
+
+  thread::spawn(move || {
+    println!("spawned thread begin 2");
+    let vals = vec![
+      String::from("more"),
+      String::from("messages"),
+      String::from("for"),
+      String::from("you"),
+    ];
+
+    for val in vals {
+      println!("send begin 2");
       tx.send(val).unwrap();
       thread::sleep(Duration::from_secs(1));
     }
